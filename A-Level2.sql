@@ -36,15 +36,15 @@ SELECT
 FROM
 	口座
 WHERE 
-	残高 >= '1000000';
+	残高 >= 1000000;
 
 -- 14
 SELECT
 	*
 FROM
 	口座
-WHERE NOT 
-	種別 = '1';
+WHERE  
+	種別 <> '1';
 
 -- 15
 SELECT
@@ -60,7 +60,7 @@ SELECT
 FROM
 	口座
 WHERE 
-	名義 like '%ハシ%';
+	名義 LIKE '%ハシ%';
 
 -- 17
 SELECT
@@ -77,8 +77,8 @@ SELECT
 	*
 FROM
 	口座
-WHERE NOT
-	種別 = '1';
+WHERE 
+	種別 IN('2', '3');
 
 -- 19
 SELECT 
