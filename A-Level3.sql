@@ -1,0 +1,19 @@
+-- 24
+SELECT
+	*
+FROM
+	口座
+ORDER BY
+	口座番号
+ASC;
+
+-- 25
+SELECT DISTINCT
+	名義
+FROM
+	口座
+ORDER BY
+	名義
+ASC;
+
+-- 26
