@@ -4,8 +4,7 @@ SELECT
 FROM
 	口座
 ORDER BY
-	口座番号
-ASC;
+	口座番号 ASC;
 
 -- 25
 SELECT DISTINCT
@@ -13,8 +12,7 @@ SELECT DISTINCT
 FROM
 	口座
 ORDER BY
-	名義
-ASC;
+	名義 ASC;
 
 -- 26
 SELECT
@@ -22,10 +20,8 @@ SELECT
 FROM
 	口座
 ORDER BY
-	4
-DESC,
-	1
-ASC;
+	4 DESC,
+	1 ASC;
 
 -- 27
 SELECT
@@ -33,8 +29,7 @@ SELECT
 FROM
 	口座
 ORDER BY
-	更新日
-ASC 
+	更新日 ASC 
 LIMIT
 	10
 WHERE
@@ -138,8 +133,7 @@ SELECT
 FROM
 	廃止口座
 ORDER BY
-	名義
-ASC;
+	名義 ASC;
 
 
 
