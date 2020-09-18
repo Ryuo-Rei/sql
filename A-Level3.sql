@@ -53,17 +53,17 @@ FROM (
 			*
 		FROM
 			口座
-		ORDER BY
-			残高 ASC,
-			更新日 DESC
 		WHERE
 			残高 <> 0
 		AND
 			更新日 IS NOT NULL
+		ORDER BY
+			残高 ASC,
+			更新日 DESC
 	) K
 )
 WHERE
-	RN >= 11 AND RN >= 20;
+	RN >= 11 AND RN <= 20;
 
 -- 29
 SELECT
