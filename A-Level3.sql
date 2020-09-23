@@ -39,26 +39,13 @@ WHERE
 SELECT
 	更新日,
 	残高
-FROM (
-	SELECT
-		K.*,
-		ROWNUM AS RN
-	FROM (
-		SELECT
-			*
-		FROM
-			口座
-		WHERE
-			残高 <> 0
-		AND
-			更新日 IS NOT NULL
-		ORDER BY
-			残高 ASC,
-			更新日 DESC
-	) K
-)
-WHERE
-	RN >= 11 AND RN <= 20;
+FROM 
+	口座
+ORDER BY			
+	残高 ASC,
+	更新日 DESC
+OFFSET 9 ROWS
+FETCH NEXT 10 ROWS ONLY;
 
 -- 29
 SELECT
