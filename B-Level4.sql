@@ -14,7 +14,7 @@ ORDER BY
 UPDATE
 	注文
 SET 
-	クーポン割引料 - 300
+	クーポン割引料 = クーポン割引料 - 300
 WHERE
 	注文日
 BETWEEN
@@ -28,7 +28,7 @@ AND
 UPDATE
 	注文
 SET
-	数量 - 1
+	数量 = 数量 - 1
 WHERE
 	注文番号 = '201802250126'
 AND
@@ -52,7 +52,7 @@ SELECT
 	WHEN 商品区分 = '1' THEN '衣類'
 	WHEN 商品区分 = '2' THEN '靴'
 	WHEN 商品区分 = '3' THEN '雑貨'
-	ELSE '未分類'
+	WHEN 商品区分 = '9' THEN '未分類'
 	END AS 区分名
 FROM
 	商品;
@@ -65,13 +65,13 @@ SELECT
 	CASE
 	WHEN 単価 < 3000 THEN 'S'
 	WHEN 単価 BETWEEN 3000 AND 9999 THNE 'M'
-	ELSE 'L'
+	WHEN 単価 >= THEN 'L'
 	END AS 販売価格ランク,
 	CASE
 	WHEN 商品区分 = '1' THEN 商品コード || ':衣類'
 	WHEN 商品区分 = '2' THEN 商品コード || ':靴'
 	WHEN 商品区分 = '3' THEN 商品コード || ':雑貨'
-	ELSE 商品コード || ':未分類'
+	WHEN 商品区分 = '9' THEN 商品コード || ':未分類'
 	END AS 商品区分
 FROM
 	商品
