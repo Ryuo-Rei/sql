@@ -62,7 +62,7 @@ FROM
 GROUP BY
 	口座番号
 ORDER BY
-	2 DESC;
+	データ件数 DESC;
 
 -- 56
 SELECT
@@ -94,13 +94,13 @@ HAVING
 
 -- 58
 SELECT
-	LEFT(名義, 1) AS 名義,
+	LEFT(名義, 1) AS 名義の1文字目,
 	COUNT(名義) AS データ件数,
 	AVG(LENGTH(TRIM(名義))) AS 名義文字数の平均
 FROM
 	口座
 GROUP BY
-	名義
+	名義の1文字目
 HAVING
 	COUNT(名義) >= 10
 AND
