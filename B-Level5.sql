@@ -4,9 +4,9 @@ SELECT
 FROM
 	注文;
 
-
 -- 47
 SELECT
+	注文日,
 	SUM(数量) AS 注文日ごとの数量合計
 FROM
 	注文
@@ -17,6 +17,7 @@ ORDER BY
 
 -- 48
 SELECT
+	商品区分,
 	MIN(単価) AS 商品区分ごとの単価最小額,
 	MAX(単価) AS 商品区分ごとの単価最高額
 FROM
@@ -28,6 +29,7 @@ ORDER BY
 
 -- 49
 SELECT
+	商品コード,
 	SUM(数量) AS これまで注文された数量合計
 FROM
 	注文
@@ -71,9 +73,11 @@ FROM
 -- 53
 SELECT
 	SUBSTRING(CAST(注文日 AS VARCHAR), 1, 4) || SUBSTRING(CAST(注文日 AS VARCHAR), 6, 2) AS 年月,
-	COUNT(注文枝番) AS 注文件数
+	COUNT(*) AS 注文件数
 FROM
 	注文
+WHERE 
+	注文枝番 = 1
 GROUP BY
 	注文日
 ORDER BY
@@ -81,10 +85,12 @@ ORDER BY
 
 -- 54
 SELECT
-	商品コード LIKE 'Z%' AS 商品コード
+	商品コード
 FROM
 	注文
+WHERE
+	商品コード LIKE 'Z%'
 GROUP BY
-	1	
+	商品コード	
 HAVING
 	SUM(数量) >= 100;
