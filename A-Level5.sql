@@ -60,7 +60,7 @@ SELECT
 FROM
 	口座
 GROUP BY
-	1
+	口座番号
 ORDER BY
 	2 DESC;
 
@@ -100,7 +100,7 @@ SELECT
 FROM
 	口座
 GROUP BY
-	1
+	名義
 HAVING
 	COUNT(名義) >= 10
 AND
