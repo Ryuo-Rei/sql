@@ -45,8 +45,8 @@ FROM
 -- 49
 SELECT
 	CASE
-	WHEN クリア区分 = '0' THEN 'クリアした'
-	WHEN クリア区分 = '1' THEN '参加したがクリアしていない'
+	WHEN クリア区分 = '1' THEN 'クリアした'
+	WHEN クリア区分 = '0' THEN '参加したがクリアしていない'
 	END AS 区分,
 	COUNT(イベント番号) AS イベント数
 FROM
@@ -70,7 +70,7 @@ SELECT
 FROM
 	パーティー
 GROUP BY
-	1;
+	職業タイプ;
  
 -- 51
 SELECT
@@ -80,7 +80,7 @@ SELECT
 FROM
 	パーティー
 GROUP BY
-	1
+	IDによる分類
 HAVING
 	AVG(HP) > 100;
 
@@ -89,16 +89,13 @@ SELECT
 	SUM(T2.キャラ事に開けることができる扉の数) AS パーティーで開けることができる扉の合計数
 FROM (
 	SELECT
-		CASE
-		WHEN HP < 100 THEN 1
-		WHEN HP BETWEEN 100 AND 149 THEN 2
-		WHEN HP BETWEEN 150 AND 199 THEN 3
-		WHEN HP >= 200 THEN 5
-		END AS キャラ事に開けることができる扉の数
+		SUM (
+			CASE
+			WHEN HP < 100 THEN 1
+			WHEN HP BETWEEN 100 AND 149 THEN 2
+			WHEN HP BETWEEN 150 AND 199 THEN 3
+			WHEN HP >= 200 THEN 5
+			END
+			)AS キャラ事に開けることができる扉の数
 	FROM
-		パーティー
-	GROUP BY
-		HP
-	)
-AS T2;
-
+		パーティー;
