@@ -6,11 +6,13 @@ SET
 				入金額 - 出金額 AS 損益
 			FROM
 				取引
+			WHERE
+				口座番号 = '0351333'
+			AND
+				更新日 = '2018-01-11'
 			)
 WHERE
-	口座番号 = '0351333'
-AND
-	更新日 = '2018-01-11';
+	口座番号 = '0351333';
 
 -- 60
 SELECT
@@ -35,8 +37,6 @@ FROM
 	口座
 WHERE
 	口座番号 = '1115600'
-AND
-	更新日 = '2017-12-28';
 
 -- 61
 SELECT
@@ -79,6 +79,8 @@ FROM (
 		入金額 IS NOT NULL
 	AND
 		出金額 IS NOT NULL
+	AND
+		口座番号 = '3104451'
 	) AS SUB
 GROUP BY
 	SUB.日付;
@@ -96,6 +98,12 @@ SELECT
 	種別,
 	残高,
 	更新日
+FROM
+	口座
+WHERE
+	口座番号 = '2761055';
+
+DELETE
 FROM
 	口座
 WHERE
