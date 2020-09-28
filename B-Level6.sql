@@ -10,7 +10,9 @@ SELECT
 	WHERE
 		商品コード = 'S0604')
 FROM
-	商品;
+	商品
+WHERE
+	商品コード = 'S0604';
 
 -- 56
 UPDATE
@@ -65,7 +67,10 @@ SELECT
 	SUM(数量) AS 販売数量
 FROM
 	注文
-WHERE
+GROUP BY
+	商品コード,
+	数量
+HAVING
 	数量 > ALL (
 			SELECT
 				AVG(数量)
@@ -78,7 +83,7 @@ WHERE
 -- 59
 SELECT
 	TRUNC(SUM(SUB.数量)) AS 割引による販売数,
-	TRUNC(AVG(SUB.クーポン割引料)) AS 平均割引額
+	TRUNC(クーポン割引料 / 数量) AS 平均割引額
 FROM (
 	SELECT
 		数量,
@@ -106,7 +111,7 @@ SELECT
 	'201803210080',
 	(
 		SELECT
-			注文枝番 + 1
+			MAX(注文枝番) + 1
 		FROM
 			注文
 		WHERE
@@ -132,7 +137,7 @@ SELECT
 	'201803220901',
 	(
 		SELECT
-			注文枝番 + 1
+			MAX(注文枝番) + 1
 		FROM
 			注文
 		WHERE
