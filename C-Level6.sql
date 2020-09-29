@@ -2,14 +2,15 @@
 SELECT
 	名称 AS なまえ,
 	HP AS 現在のHP,
-	ROUND(HP / SUM(HP), 1) AS パーティーでの割合
+	ROUND((HP / SUM(HP)) * 100, 1) || '%' AS パーティーでの割合
 FROM
 	パーティー
-WHERE
-	職業コード = '01'
 GROUP BY
 	名称,
-	HP;
+	HP,
+	職業コード
+HAVING
+	職業コード = '01';
 
 -- 54
 UPDATE
@@ -28,18 +29,20 @@ WHERE
 
 -- 55
 SELECT
-	(
-		SELECT
-			イベント番号
-		FROM
-			イベント
-		WHERE
-			タイプ IN ('1', '3')
-	),
+	イベント番号,
 	クリア結果
 FROM
 	経験イベント
 WHERE
+	イベント番号 IN (
+			SELECT
+				イベント番号
+			FROM
+				イベント
+			WHERE
+				タイプ IN ('1', '3')
+			)
+AND
 	クリア区分 = '1';
 
 -- 56
@@ -64,13 +67,13 @@ SELECT
 FROM
 	イベント
 WHERE
-	イベント番号 IN 
+	イベント番号 NOT IN 
 					(
 						SELECT
 							イベント番号
 						FROM
 							イベント
-						EXCEPT
+						INTERSECT
 						SELECT
 							イベント番号
 						FROM
@@ -106,8 +109,8 @@ WHERE
 					イベント番号
 				FROM
 					経験イベント
-				OFFSET 4 ROWS
-				FETCH NEXT 1 ROWS ONLY
+				WHERE
+					ルート番号 = 5
 			    );
 
 -- 60
@@ -124,14 +127,14 @@ WHERE
 				FROM
 					経験イベント
 				WHERE
-					クリア区分 = '0'
+					クリア区分 = '1'
 				);
 					
 -- 61
 UPDATE
 	経験イベント
 SET 	
-	クリア区分 = 0,
+	クリア区分 = 1,
 	クリア結果 = 'B'
 WHERE
 	イベント番号 = 9;
