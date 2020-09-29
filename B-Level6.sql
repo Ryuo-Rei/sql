@@ -68,10 +68,9 @@ SELECT
 FROM
 	注文
 GROUP BY
-	商品コード,
-	数量
+	商品コード
 HAVING
-	数量 > ALL (
+	SUM(数量) > ALL (
 			SELECT
 				AVG(数量)
 			FROM
@@ -83,7 +82,7 @@ HAVING
 -- 59
 SELECT
 	TRUNC(SUM(SUB.数量)) AS 割引による販売数,
-	TRUNC(クーポン割引料 / 数量) AS 平均割引額
+	TRUNC(SUM(クーポン割引料) / SUM(数量)) AS 平均割引額
 FROM (
 	SELECT
 		数量,
