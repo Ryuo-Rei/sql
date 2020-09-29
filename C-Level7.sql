@@ -71,7 +71,7 @@ ON
 -- 65
 SELECT
 	T1.ID,
-	T1.なまえ,
+	T1.名称 AS なまえ,
 	T2.職業,
 	T2.状態
 FROM
@@ -79,52 +79,96 @@ FROM
 JOIN
 	(
 	SELECT
-		CASE
-		WHEN コード種別 = 1 AND コード値 = '01' THEN '勇者'
-		WHEN コード種別 = 1 AND コード値 = '10' THEN '戦士'
-		WHEN コード種別 = 1 AND コード値 = '11' THEN '武道家'
-		WHEN コード種別 = 1 AND コード値 = '20' THEN '魔王使い'
-		WHEN コード種別 = 1 AND コード値 = '21' THEN '学者'
-		END AS 職業,
-		CASE
-		WHEN コード種別 = 2 AND コード値 = '00' THEN '異常なし'
-		WHEN コード種別 = 2 AND コード値 = '01' THEN '眠り'
-		WHEN コード種別 = 2 AND コード値 = '02' THEN '毒'
-		WHEN コード種別 = 2 AND コード値 = '03' THEN '沈黙'
-		WHEN コード種別 = 2 AND コード値 = '04' THEN '混乱'
-		WHEN コード種別 = 2 AND コード値 = '09' THEN '気絶'
-		END AS 状態
+		コード名称 AS 職業,
+		コード名称 AS 状態,
+		コード値
 	FROM
 		コード
 	) AS T2
 ON
 	T1.職業コード = T2.コード値
 OR
-	T1.状態コード = T2.コード値;
+	T1.状態コード = T2.コード値
+ORDER BY
+	ID;
 
 -- 66
 SELECT
-	ID,
-	名称 AS なまえ,
-	職業
+	T1.ID,
+	CASE
+	WHEN T2.コード値 <> T1.職業コード THEN '仲間になっていない！'
+	ELSE 名称
+	END AS なまえ,
+	T2.職業
 FROM
+	パーティー T1
+JOIN
 	(
 	SELECT
-		ID,
-		名称 AS なまえ,
-		職業コード
+		コード名称 AS 職業,
+		コード値
 	FROM
-		パーティー
-	WHERE EXISTS 
-			(
-			SELECT
-				1
-			FROM
-				パーティー
-			WHERE
-				職業
-			)
-	)
+		コード
+	) AS T2
+ON T1.職業コード = T2.コード値;
+
+-- 67
+SELECT
+	イベント番号,
+	クリア区分,	
+	コード値 || ':' || コード名称 AS クリア結果
+FROM
+	経験イベント T1
+JOIN
+	コード T2
+ON
+	T1.クリア結果 = T2.コード値
+
+-- 68
+SELECT
+	T1.イベント番号,
+	T1.イベント名称,
+	T1.前提イベント番号,
+	T2.イベント名称 AS 前提イベント名称
+FROM
+	イベント T1
+JOIN
+	イベント T2
+ON
+	T1.前提イベント番号 = T2.イベント番号;	
+
+-- 69
+SELECT
+	T1.イベント番号,
+	T1.イベント名称,
+	T1.前提イベント番号,
+	T2.イベント名称 AS 前提イベント名称,
+	T1.後続イベント番号,
+	T2.イベント名称 AS 後続イベント名称
+FROM
+	イベント T1
+JOIN
+	イベント T2
+ON
+	T1.前提イベント番号 = T2.イベント番号
+AND
+	T1.後続イベント番号 = T2.イベント番号;	
+
+-- 70
+SELECT
+	T1.イベント番号,
+	T1.イベント名称,
+	COUNT(T1.前提イベント番号) AS 前提イベント数
+FROM
+	イベント T1
+JOIN
+	イベント T2
+ON
+	T1.前提イベント番号 = T2.イベント番号
+GROUP BY
+	T1.イベント番号;
+
+
 
 
 
