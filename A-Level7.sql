@@ -5,7 +5,6 @@ SELECT
 	T2.取引事由名,
 	CASE
 	WHEN T1.入金額 IS NULL THEN T1.出金額
-	WHEN T1.出金額 IS NULL THEN T1.入金額
 	END AS 取引金額
 FROM
 	取引 T1
@@ -13,8 +12,6 @@ JOIN
 	取引事由 T2
 ON 
 	T1.取引事由ID = T2.取引事由ID
-GROUP BY
-	T1.口座番号
 WHERE
 	T1.口座番号 IN ('0311240', '1234161', '2750902')
 ORDER BY
@@ -22,19 +19,22 @@ ORDER BY
 
 -- 66
 SELECT
-	AS 口座情報,
-	T2日付,
+	T1.口座番号,
+	T1.名義,
+	T1.残高,
+	T2.日付,
 	T2.入金額,
-	T2.出金額 取引情M
-	T1.口座
+	T2.出金額
+FROM
+	口座 T1
 INNER JOIN
-	T2.取引
+	取引 T2
 ON
-	T1.口座番号 = T2.口座番号;
+	T1.口座番号 = T2.口座番号
 WHERE
-	口座番号 = '0887132'
+	T1.口座番号 = '0887132'
 ORDER BY
-	取引日 ASC;
+	日付 ASC;
 
 -- 67
 SELECT DISTINCT
@@ -44,17 +44,7 @@ SELECT DISTINCT
 FROM
 	口座 T1
 JOIN
-	(
-	SELECT
-		*
-	FROM
-		口座
-	EXCEPT
-	SELECT
-		*
-	FROM
-		廃止口座
-	) AS T2
+	廃止口座 T2
 ON
 	T1.口座番号 = T2.口座番号
 JOIN
@@ -68,16 +58,16 @@ WHERE
 SELECT DISTINCT
 	T1.口座番号,
 	CASE
-	WHEN T1.口座番号 = T2.口座番号 THEN '解約済み'
+	WHEN T2.口座番号 IS NOT NULL  THEN '解約済み'
 	ELSE T1.名義
 	END AS 名義,
 	CASE
-	WHEN T1.口座番号 = T2.口座番号 THEN 0
+	WHEN T2.口座番号 IS NOT NULL THEN 0
 	ELSE T1.残高
 	END AS 残高
 FROM
 	口座 T1
-JOIN
+LEFT OUTER JOIN
 	廃止口座 T2
 ON
 	T1.口座番号 = T2.口座番号
@@ -104,30 +94,41 @@ ON
 	T1.取引事由ID = T2.取引事由ID;
 
 -- 70
-SELECT DISTINCT
+SELECT
 	T1.取引事由ID,
 	T1.取引事由名
 FROM
 	取引事由 T1
-JOIN
+LEFT OUTER JOIN
 	取引 T2
 ON
-	T1.取引事由ID = T2.取引事由ID;
+	T1.取引事由ID = T2.取引事由ID
+WHERE
+	T1.取引事由ID IS NOT NULL;
 
 -- 71
 SELECT
-	'(' || 口座番号 || '、' || 名義 || '、' || 残高 || ')' AS 口座情報,
-	'(' || 日付 || '、' || 入金額 || '、' || 出金額 || ')' AS 取引情報
+	T1.口座番号,
+	T1.名義,
+	T1.残高,
+	T2.日付,
+	T2.入金額,
+	T2.出金額,
+	T3.取引事由名
 FROM
 	口座 T1
 INNER JOIN
 	取引 T2
 ON
-	T1.口座番号 = T2.口座番号;
+	T1.口座番号 = T2.口座番号
+JOIN
+	取引事由 T3
+ON
+	T2.取引事由ID = T3.取引事由ID
 WHERE
 	T1.口座番号 = '0887132'
 ORDER BY
-	T2.取引日 ASC;
+	T2.日付 ASC;
 
 -- 72
 SELECT
@@ -191,19 +192,20 @@ WHERE
 SELECT
 	T1.名義,
 	T2.口座番号,
-	COUNT(T2.取引番号)
+	T2.取引数
 FROM
 	口座 T1
 JOIN
 	(
 	SELECT
 		口座番号,
-		COUNT(取引番号),
-		取引番号
+		COUNT(取引番号) AS 取引数,
+		日付
 	FROM
 		取引
 	GROUP BY 
-		取引番号
+		口座番号,
+		日付
 	HAVING
 		COUNT(取引番号) >= 3
 	)AS T2
@@ -211,14 +213,24 @@ ON
 	T1.口座番号 = T2.口座番号;
 
 -- 75
-SELECT DISTINCT
-	名義,
-	口座番号,
-	種別,
-	残高,
-	更新日
+SELECT
+	T1.名義,
+	T1.口座番号,
+	T1.種別,
+	T1.残高,
+	T1.更新日
 FROM
-	口座
-ORDER BY
-	名義 ASC,
-	口座番号 ASC;
+	口座 T1
+JOIN
+	(
+	SELECT
+		名義
+	FROM
+		口座
+	GROUP BY
+		名義
+	HAVING
+		COUNT(口座番号) >= 2
+	) AS T2
+ON
+	T1.名義 = T2.名義;
