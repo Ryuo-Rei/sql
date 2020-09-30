@@ -91,21 +91,16 @@ ON
 -- 65
 SELECT DISTINCT
 	T1.商品コード,
-	T1.商品名
+	CASE
+	WHEN T2.商品名 IS NOT NULL THEN '廃番'
+	ELSE T1.商品名
+	END AS 商品名
 FROM
-	(
-	SELECT
-		商品コード,
-		商品名
-	FROM
-		商品
-	UNION
-	SELECT
-		商品コード,
-		'廃番' AS 商品名 
-	FROM
-		廃番商品
-	) AS T1
+	商品 T1
+LEFT JOIN
+	廃番商品 T2
+ON
+	T1.商品コード = T2.商品コード
 JOIN
 	(
 	SELECT
@@ -115,26 +110,19 @@ JOIN
 	WHERE
 		注文日
 	BETWEEN '2016-08-01' AND '2016-08-31'
-	) AS T2
+	) AS T3
 ON
-	T1.商品コード = T2.商品コード;
+	T1.商品コード = T3.商品コード;
 
 -- 66
 SELECT
-	T1.注文日,
-	T2.商品コード || ':' || T2.商品名 AS 商品,
-	T1.数量
+	T2.注文日,
+	T1.商品コード || ':' || T1.商品名 AS 商品,
+	CASE
+	WHEN T2.数量 IS NOT NULL THEN 0
+	ELSE T2.数量
+	END AS 数量
 FROM
-	(
-	SELECT 
-		注文日,
-		商品コード,
-		数量
-	FROM
-		注文
-	
-	) AS T1
-JOIN
 	(
 	SELECT
 		商品コード,
@@ -143,7 +131,9 @@ JOIN
 		商品
 	WHERE
 		商品区分 = '3'
-	) AS T2
+	) AS T1
+LEFT JOIN
+	注文 T2
 ON
 	T1.商品コード = T2.商品コード;
 
@@ -151,17 +141,9 @@ ON
 SELECT
 	T1.注文日,
 	T2.商品コード || ':' || T2.商品名 AS 商品,
-	T1.数量
+	T1.数量	
 FROM
-	(
-	SELECT
-		注文日,
-		商品コード,
-		数量
-	FROM
-		注文
-	
-	) AS T1
+	注文 T1
 JOIN
 	(
 	SELECT
@@ -171,7 +153,11 @@ JOIN
 		商品
 	WHERE
 		商品区分 = '3'
-	UNION
+	) AS T2
+ON
+	T1.商品コード = T2.商品コード
+LEFT JOIN
+	(
 	SELECT
 		商品コード,
 		'(廃番済み)' AS 商品名
@@ -179,9 +165,9 @@ JOIN
 		廃番商品
 	WHERE
 		商品区分 = '3'
-	) AS T2
+	) AS T3
 ON
-	T1.商品コード = T2.商品コード;
+	T2.商品コード = T3.商品コード;
 
 -- 68
 SELECT
@@ -192,7 +178,10 @@ SELECT
 	T2.商品名,
 	T2.単価,
 	T1.数量,
-	(単価 * 数量) - クーポン割引料 AS 注文金額
+	CASE
+	WHEN クーポン割引料 IS NULL THEN (T2.単価 * 数量)
+	ELSE (T2.単価 * 数量) - クーポン割引料 
+	END AS 注文金額
 FROM
 	(
 	SELECT
@@ -208,22 +197,13 @@ FROM
 		注文番号 = '201704030010'
 	) AS T1
 JOIN
-	(
-	SELECT
-		商品コード,
-		商品名,
-		単価
-	FROM
-		商品
-	UNION
-	SELECT
-		商品コード,
-		商品名,
-		単価
-	FROM
-		廃番商品
-	) AS T2
+	商品 T2
+ON 
+	T1.商品コード = T2.商品コード
+LEFT JOIN
+	廃番商品 T3
 ON
+	
 	T1.商品コード = T2.商品コード;
 
 -- 69
@@ -260,13 +240,11 @@ SELECT
 	T1.商品コード,
 	T1.商品名,
 	T1.関連商品コード,
-	T1.関連商品名
+	T2.商品名 AS 関連商品名
 FROM
 	商品 T1
 JOIN
 	商品 T2
 ON
 	T1.関連商品コード = T2.商品コード
-AND
-	T1.関連商品名 = T2.商品名;
 
