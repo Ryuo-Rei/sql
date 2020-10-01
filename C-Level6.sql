@@ -2,15 +2,22 @@
 SELECT
 	名称 AS なまえ,
 	HP AS 現在のHP,
-	ROUND((HP / SUM(HP)) * 100, 1) || '%' AS パーティーでの割合
+	ROUND((HP/SUM(HP)) * 100, 1) AS パーティーでの割合
 FROM
 	パーティー
+WHERE
+	HP = (
+			SELECT
+				HP
+			FROM
+				パーティー
+			WHERE
+				職業コード = '01'
+		 )
 GROUP BY
 	名称,
-	HP,
-	職業コード
-HAVING
-	職業コード = '01';
+	HP
+
 
 -- 54
 UPDATE
@@ -68,17 +75,12 @@ FROM
 	イベント
 WHERE
 	イベント番号 NOT IN 
-					(
-						SELECT
-							イベント番号
-						FROM
-							イベント
-						INTERSECT
-						SELECT
-							イベント番号
-						FROM
-							経験イベント
-					)
+				(
+					SELECT
+						イベント番号
+					FROM
+						経験イベント
+				)
 ORDER BY
 	イベント番号 ASC;
 
@@ -140,23 +142,29 @@ WHERE
 	イベント番号 = 9;
 
 INSERT INTO
-	経験イベント(
+	経験イベント
+		(
 			イベント番号,
 			クリア区分,
 			クリア結果,
 			ルート番号
-			)
-SELECT
-		(
-			SELECT
-				後続イベント番号
-			FROM
-				イベント
-			WHERE
-				イベント番号 = 9
-		),
-		1,
-		NULL,
-		ルート番号 + 1
-FROM
-	経験イベント;		
+		)
+VALUES
+	(
+	(
+	SELECT
+		後続イベント番号
+	FROM
+		イベント
+	WHERE
+		イベント番号 = 9
+	),
+	1,
+	NULL,
+	(
+	SELECT
+		MAX(ルート番号) + 1
+	FROM
+		経験イベント
+	)
+	);	
